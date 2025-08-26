@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Unit Converter (Undo Enabled)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body { font-family: Arial, sans-serif; padding: 1rem; }
+        .container { max-width: 640px; margin: 0 auto; }
+        .converter input, .converter select, .converter button { margin: 0.4rem 0; display:block; }
+        #result { margin-top: 0.6rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Unit Converter</h1>
+        <div class="converter">
+            <label for="inputValue">Value:</label>
+            <input type="number" id="inputValue" placeholder="Enter value" step="any" required />
+            <label for="fromUnit">From:</label>
+            <select id="fromUnit">
+                <option value="meters">Meters</option>
+                <option value="kilometers">Kilometers</option>
+                <option value="miles">Miles</option>
+                <option value="feet">Feet</option>
+            </select>
+            <label for="toUnit">To:</label>
+            <select id="toUnit">
+                <option value="meters">Meters</option>
+                <option value="kilometers">Kilometers</option>
+                <option value="miles">Miles</option>
+                <option value="feet">Feet</option>
+            </select>
+            <button type="button" onclick="convertUnits()">Convert</button>
+            <button type="button" onclick="undoLast()">Back</button>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+    let lastValue = null;
+    let lastFrom = null;
+    let lastTo = null;
+    let lastResult = null;
+
+    function validateInput(id) {
+        var el = document.getElementById(id);
+        var value = el.value;
+        if (id === 'inputValue') {
+            if (value === '' || isNaN(value)) {
+                alert('Please enter a valid number for inputValue.');
+                el.focus();
+                return false;
+            }
+            var num = Number(value);
+            if (num < -1000000000000.0 || num > 1000000000000.0) {
+                alert('inputValue must be between -1000000000000.0 and 1000000000000.0.');
+                el.focus();
+                return false;
+            }
+        }
+        
+        return true;
+        var el = document.getElementById(id);
+        var value = el.value;
+        if (value === '' || isNaN(value)) {
+            alert('Please enter a valid number.');
+            el.focus();
+            return false;
+        }
+        return true;
+    }
+
+    function convertUnits() {
+        if (!validateInput('inputValue')) return;
+        if (!confirm('Confirm?')) return;
+
+        // Store before overwriting
+        lastValue = document.getElementById('inputValue').value;
+        lastFrom = document.getElementById('fromUnit').value;
+        lastTo = document.getElementById('toUnit').value;
+        lastResult = document.getElementById('result').textContent;
+
+        var val = Number(lastValue);
+        var from = lastFrom;
+        var to = lastTo;
+
+        var toMeters = {
+            meters: 1,
+            kilometers: 1000,
+            miles: 1609.344,
+            feet: 0.3048
+        };
+
+        if (!(from in toMeters) || !(to in toMeters)) {
+            document.getElementById('result').textContent = 'Conversion not supported.';
+            return;
+        }
+
+        var meters = val * toMeters[from];
+        var converted = meters / toMeters[to];
+        var display = Number.isFinite(converted) ? Number(converted.toFixed(6)) : 'Error';
+        document.getElementById('result').textContent = val + ' ' + from + ' = ' + display + ' ' + to;
+    }
+
+    function undoLast() {
+        if (lastValue !== null) {
+            document.getElementById('inputValue').value = lastValue || '';
+            document.getElementById('fromUnit').value = lastFrom || 'meters';
+            document.getElementById('toUnit').value = lastTo || 'meters';
+            document.getElementById('result').textContent = lastResult || '';
+        }
+    }
+    </script>
+</body>
+</html>

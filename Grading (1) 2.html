@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Score to Grade Converter (Undo Enabled)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body { font-family: Arial, sans-serif; padding: 1rem; }
+        .container { max-width: 480px; margin: 0 auto; }
+        label, input, button { display:block; margin: 0.4rem 0; }
+        #result { margin-top: 0.6rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Score to Grade Converter</h1>
+        <label for="score">Enter the Score (0 - 100):</label>
+        <input type="number" id="score" min="0" max="100" required />
+        <button type="button" onclick="submitGrade()">Submit</button>
+        <button type="button" onclick="undoLast()">Back</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+    let lastScore = null;
+    let lastGrade = null;
+
+    function validateInput(id) {
+        var el = document.getElementById(id);
+        var value = el.value;
+        if (id === 'score') {
+            if (value === '' || !Number.isInteger(Number(value))) {
+                alert('Please enter a valid integer for score.');
+                el.focus();
+                return false;
+            }
+            var num = Number(value);
+            if (num < 0 || num > 100) {
+                alert('score must be between 0 and 100.');
+                el.focus();
+                return false;
+            }
+        }
+        
+        return true;
+        var el = document.getElementById(id);
+        var value = el.value;
+        if (value === '' || isNaN(value)) {
+            alert('Please enter a number between 0 and 100.');
+            el.focus();
+            return false;
+        }
+        var num = Number(value);
+        if (num < 0 || num > 100) {
+            alert('Score must be between 0 and 100.');
+            el.focus();
+            return false;
+        }
+        return true;
+    }
+
+    function submitGrade() {
+        if (!validateInput('score')) return;
+        if (!confirm('Confirm?')) return;
+
+        // Store before overwriting
+        lastScore = document.getElementById('score').value;
+        lastGrade = document.getElementById('result').textContent;
+
+        var s = Number(lastScore);
+        var grade;
+        if (s >= 90) grade = 'A';
+        else if (s >= 80) grade = 'B';
+        else if (s >= 70) grade = 'C';
+        else if (s >= 60) grade = 'D';
+        else grade = 'F';
+
+        document.getElementById('result').textContent = 'Grade: ' + grade;
+    }
+
+    function undoLast() {
+        if (lastScore !== null || lastGrade !== null) {
+            document.getElementById('score').value = lastScore || '';
+            document.getElementById('result').textContent = lastGrade || '';
+        }
+    }
+    </script>
+</body>
+</html>
